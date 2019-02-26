@@ -19,8 +19,11 @@ def yield_dataset(file, batchsize):
         
         negative_df = imbalance_df[imbalance_df.is_attributed==0]
         negative_size = negative_df.shape[0]
+        
+        # generate equal negative and positive samples by downsampling the negative class
         if negative_size > positive_size:
             negative_df = negative_df.sample(positive_size)
+
         df = pd.concat([positive, negative_df])
         df = df.drop(['click_time', 'attributed_time'], axis=1)
         features = np.asarray(df.drop(['is_attributed'], axis=1))
