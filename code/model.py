@@ -18,7 +18,7 @@ def __resnet1D_block(num_filters, maxpool_size, inputlayer):
 
 
 def resnet_with_dropout(inputshape, num_classes):
-	inputlayer = Input(shape=(inputshape[1],1))
+    inputlayer = Input(shape=(inputshape[1],1))
     resnetblock = __resnet1D_block(64, 2, inputlayer)
     resnetblock = Dropout(0.3)(resnetblock)
     resnetblock = __resnet1D_block(128, 2, resnetblock)
