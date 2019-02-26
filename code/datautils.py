@@ -24,7 +24,7 @@ def yield_dataset(file, batchsize):
         if negative_size > positive_size:
             negative_df = negative_df.sample(positive_size)
 
-        df = pd.concat([positive, negative_df])
+        df = pd.concat([positive_df, negative_df])
         df = df.drop(['click_time', 'attributed_time'], axis=1)
         features = np.asarray(df.drop(['is_attributed'], axis=1))
         features = features.reshape(features.shape[0], features.shape[1],1)
