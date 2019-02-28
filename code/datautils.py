@@ -39,3 +39,15 @@ def datagenerator(file, batchsize):
             yield current_data
         except StopIteration:
             generator = yield_dataset(file, batchsize)
+
+def load_dataset(file):
+    df = pd.read_csv(file)
+
+    feature_df = df.drop(['attributed_time', 'is_attributed'], axis=1)
+    feature_df['hour'] = pd.to_datetime(feature_df.click_time).dt.hour
+    feature_df['day'] = pd.to_datetime(feature_df.click_time).dt.day
+    feature_df = feature_df.drop(['click_time'], axis=1)
+
+    label_df = df['is_attributed']
+
+    return feature_df, label_df

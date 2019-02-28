@@ -3,11 +3,13 @@ from keras.layers import Input, BatchNormalization, Conv1D, Activation, MaxPooli
 from keras.layers.merge import add
 from keras.models import Model
 import lightgbm as lgbm
-from datautils import datagenerator
+from datautils import datagenerator, load_dataset
 from keras.callbacks import TensorBoar
 
 class ResNet:
-    def __init__(self, inputshape, num_classes):
+    def __init__(self, config):
+        inputshape = config['inputshape']
+        num_classes = config['num_classes']
         self.model = self.resnet_with_dropout(inputshape, num_classes)
 
     def __resnet1D_block(self, num_filters, maxpool_size, inputlayer):
@@ -57,9 +59,10 @@ class ResNet:
 
 
 class LightGBM:
-    def __init__(self, categorical_features):
-        self.params = self.initparams()
-        self.categorical_features = categorical_features
+    def __init__(self, config):
+        self.model_params = self.initparams()
+        self.optima_boost_round = 340 # use cross-validation to estimate optimum value
+
 
     def initparams(self):
         params = {
@@ -86,13 +89,17 @@ class LightGBM:
         }
         return params
     
-    def train(self, train_data, rounds):
+    def train(self, trainfile):
         '''
-        train_data: training dataset of type lightgbm.Dataset 
-        rounds: number of training boositng rounds - you can use cross-validation to determine the optima boost_rounds
+        load training file and train lightgbm model
         '''
-        model = lgbm.train(params=self.params, 
+        features, labels = load_dataset(trainfile)
+        train_data = lgbm.Dataset(data=features, label=labels,
+                                    feature_name=features.columns.tolist(),
+                                    categorical_feature=features.columns.tolist())
+
+        model = lgbm.train(params=self.model_params, 
                             train_set=train_data, 
-                            num_boost_round=rounds, 
-                            categorical_feature=self.categorical_features)
+                            num_boost_round=self.optima_boost_round, 
+                            categorical_feature=features.columns.tolist())
         return model
