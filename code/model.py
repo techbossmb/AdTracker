@@ -59,9 +59,9 @@ class ResNet:
 
 
 class LightGBM:
-    def __init__(self, config):
+    def __init__(self):
         self.model_params = self.initparams()
-        self.optima_boost_round = 340 # use cross-validation to estimate optimum value
+        self.optima_boost_round = 300 # to use cross-validation to estimate optimum value, set this to None
 
 
     def initparams(self):
@@ -89,17 +89,29 @@ class LightGBM:
         }
         return params
     
+    def get_optima_boost_round(self, train_data):
+        crossvalidation = lgbm.cv(params=self.model_params,
+                                train_set=train_data,
+                                nfold=10,
+                                num_boost_round=1000,
+                                early_stopping_rounds=100,
+                                verbose_eval=10,
+                                categorical_feature=self.categorical_features)
+
     def train(self, trainfile):
         '''
         load training file and train lightgbm model
         '''
         features, labels = load_dataset(trainfile)
+        self.categorical_features = features.columns.tolist()
         train_data = lgbm.Dataset(data=features, label=labels,
                                     feature_name=features.columns.tolist(),
-                                    categorical_feature=features.columns.tolist())
+                                    categorical_feature=self.categorical_features)
+
+        if self.optima_boost_round is None: self.optima_boost_round = self.get_optima_boost_round(train_data)
 
         model = lgbm.train(params=self.model_params, 
                             train_set=train_data, 
                             num_boost_round=self.optima_boost_round, 
-                            categorical_feature=features.columns.tolist())
+                            categorical_feature=self.categorical_features)
         return model
