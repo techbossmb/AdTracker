@@ -6,6 +6,8 @@ import lightgbm as lgbm
 from datautils import datagenerator, load_dataset
 from keras.callbacks import TensorBoar
 import os
+import random
+import string
 
 class ResNet:
     def __init__(self):
@@ -13,7 +15,7 @@ class ResNet:
 
     def __resnet1D_block(self, num_filters, maxpool_size, inputlayer):
         skipblock = Conv1D(num_filters, 1, padding='same')(inputlayer)
-        convblock = Conv1D(num_filters, 3, padding='same')(convblock)
+        convblock = Conv1D(num_filters, 3, padding='same')(inputlayer)
         convblock = BatchNormalization()(convblock)
         convblock = Activation('relu')(convblock)
         convblock = Conv1D(num_filters, 3, padding='same')(convblock)
@@ -42,6 +44,7 @@ class ResNet:
         return model
 
     def __init_params(self):
+        random_string = ''.join(random.choice(string.lowercase) for i in range(5))
         params = {
             'num_features': 5,
             'num_classes': 1,
@@ -49,7 +52,7 @@ class ResNet:
             'num_steps': 1000,
             'num_classes': 1,
             'num_epochs': 10,
-            'tensorboard_logdir':'..{0}logs{0}resnet_1D_with_dropout'.format(os.sep)
+            'tensorboard_logdir':'..{0}logs{0}resnet_1D_with_dropout_{1}'.format(os.sep, random_string)
         }
         return params
 
