@@ -44,7 +44,7 @@ class ResNet:
         return model
 
     def __init_params(self):
-        random_string = ''.join(random.choice(string.lowercase) for i in range(5))
+        random_string = ''.join(random.choice(string.ascii_lowercase) for i in range(5))
         params = {
             'num_features': 5,
             'num_classes': 1,
