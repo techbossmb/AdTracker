@@ -5,12 +5,11 @@ from keras.models import Model
 import lightgbm as lgbm
 from datautils import datagenerator, load_dataset
 from keras.callbacks import TensorBoar
+import os
 
 class ResNet:
-    def __init__(self, config):
-        inputshape = config['inputshape']
-        num_classes = config['num_classes']
-        self.model = self.resnet_with_dropout(inputshape, num_classes)
+    def __init__(self):
+        self.params = self.__init_params()
 
     def __resnet1D_block(self, num_filters, maxpool_size, inputlayer):
         skipblock = Conv1D(num_filters, 1, padding='same')(inputlayer)
@@ -42,29 +41,46 @@ class ResNet:
         model = Model(inputlayer, softmax)
         return model
 
-    def train(self, trainfile, validationfile, batchsize, num_steps, logdir):
+    def __init_params(self):
+        params = {
+            'num_features': 5,
+            'num_classes': 1,
+            'batchsize': 1280,
+            'num_steps': 1000,
+            'num_classes': 1,
+            'num_epochs': 10,
+            'tensorboard_logdir':'..{0}logs{0}resnet_1D_with_dropout'.format(os.sep)
+        }
+        return params
+
+    def train(self, trainfile, validationfile):
         # refactor train function and args
-        tensorboard = TensorBoar(logdir=logdir)
-        self.model.compile(optimizer='adam', 
-                            loss='binary_crossentropy', 
-                            metrics=['accuracy', 'mse'])
-        self.model.fit_generator(datagenerator(trainfile, batchsize),
-                        steps_per_epoch=int(num_steps/1),
-                        epochs=10, 
-                        verbose=1,
-                        validation_data=datagenerator(validationfile),
-                        validation_steps=100,
-                        callbacks = [tensorboard])
-        return self.model
+        inputshape = (self.params['batchsize'], self.params['num_features'], 1)
+        model = self.resnet_with_dropout(inputshape, self.params['num_classes'])
+
+        model.compile(optimizer='adam', 
+                        loss='binary_crossentropy', 
+                        metrics=['accuracy', 'mse'])
+
+        tensorboard = TensorBoar(logdir=self.params['tensorboard_logdir'])
+
+        model.fit_generator(datagenerator(trainfile, self.params['batchsize']),
+                            steps_per_epoch=self.params['num_steps'],
+                            epochs=self.params['num_epochs'], 
+                            verbose=1,
+                            validation_data=datagenerator(validationfile),
+                            validation_steps=100,
+                            callbacks = [tensorboard])
+        return model
 
 
 class LightGBM:
     def __init__(self):
-        self.model_params = self.initparams()
+        self.model_params = self.__initparams()
         self.optima_boost_round = 300 # to use cross-validation to estimate optimum value, set this to None
 
 
-    def initparams(self):
+    def __initparams(self):
         params = {
             'boosting_type': 'gbdt',
             'drop_rate': 0.09, 
