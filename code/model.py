@@ -8,6 +8,7 @@ from keras.callbacks import TensorBoar
 import os
 import random
 import string
+import numpy as np
 
 class ResNet:
     def __init__(self):
@@ -49,10 +50,10 @@ class ResNet:
             'num_features': 5,
             'num_classes': 1,
             'batchsize': 1280,
-            'num_steps': 1000,
-            'num_classes': 1,
             'num_epochs': 10,
-            'tensorboard_logdir':'..{0}logs{0}resnet_1D_with_dropout_{1}'.format(os.sep, random_string)
+            'num_train_steps': 144000,
+            'num_validation_steps': 10000,
+            'tensorboard_logdir':'..{0}logs{0}resnet1D_with_dropout_{1}'.format(os.sep, random_string)
         }
         return params
 
@@ -63,16 +64,16 @@ class ResNet:
 
         model.compile(optimizer='adam', 
                         loss='binary_crossentropy', 
-                        metrics=['accuracy', 'mse'])
+                        metrics=['accuracy'])
 
         tensorboard = TensorBoar(logdir=self.params['tensorboard_logdir'])
 
         model.fit_generator(datagenerator(trainfile, self.params['batchsize']),
-                            steps_per_epoch=self.params['num_steps'],
+                            steps_per_epoch=self.params['num_train_steps'],
                             epochs=self.params['num_epochs'], 
                             verbose=1,
-                            validation_data=datagenerator(validationfile),
-                            validation_steps=100,
+                            validation_data=datagenerator(validationfile, self.params['batchsize']),
+                            validation_steps=self.params['num_validation_steps'],
                             callbacks = [tensorboard])
         return model
 
@@ -116,6 +117,7 @@ class LightGBM:
                                 early_stopping_rounds=100,
                                 verbose_eval=10,
                                 categorical_feature=self.categorical_features)
+        return np.argmax(crossvalidation['auc-mean'])
 
     def train(self, trainfile):
         '''
