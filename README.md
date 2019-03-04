@@ -1,6 +1,8 @@
 # AdTracker
-AdTracking Fraud Detection -  detect fraudulent click traffic for ads
-<link>https://www.kaggle.com/c/talkingdata-adtracking-fraud-detection</link>
+AdTracking Fraud Detection - detect fraudulent click traffic for ads using
++ Deep Learning (ResNet with 1D Convolution)
++ Gradient Boosting (LightGBM)
+Kaggle: <link>https://www.kaggle.com/c/talkingdata-adtracking-fraud-detection</link>
 
 #### Usage
 ```python
