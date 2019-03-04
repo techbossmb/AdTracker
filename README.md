@@ -3,7 +3,7 @@ AdTracking Fraud Detection -  detect fraudulent click traffic for ads
 <link>https://www.kaggle.com/c/talkingdata-adtracking-fraud-detection</link>
 
 #### Usage
-```
+```python
 from model import LightGBM, ResNet
 import os
 datapath = '..{}data'.format(os.sep)
