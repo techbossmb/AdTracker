@@ -10,6 +10,7 @@ datapath = '..{}data'.format(os.sep)
 trainfile = '{}sample_train_data.csv'.format(datapath)
 valfile = '{}sample_val_data.csv'.format(datapath)
 </code>
+
 '''example using ResNet model'''
 <code>
 resnet = ResNet()
