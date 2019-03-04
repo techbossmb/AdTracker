@@ -9,12 +9,10 @@ import os
 datapath = '..{}data'.format(os.sep)
 trainfile = '{}sample_train_data.csv'.format(datapath)
 valfile = '{}sample_val_data.csv'.format(datapath)
-
 '''example using ResNet model'''
 resnet = ResNet()
 resnet_model = resnet.train(trainfile, valfile)
 '''use trained model for prediction - resnet_model.predict()'''
-
 '''example using LightGBM model'''
 lightgbm = LightGBM()
 lightgbm_model = lightgbm.train(trainfile)
