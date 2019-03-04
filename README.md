@@ -2,6 +2,7 @@
 AdTracking Fraud Detection - detect fraudulent click traffic for ads using
 + Deep Learning (ResNet with 1D Convolution)
 + Gradient Boosting (LightGBM)
+
 Kaggle: <link>https://www.kaggle.com/c/talkingdata-adtracking-fraud-detection</link>
 
 #### Usage
