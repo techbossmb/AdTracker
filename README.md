@@ -7,8 +7,8 @@ AdTracking Fraud Detection -  detect fraudulent click traffic for ads
 from model import LightGBM, ResNet
 import os
 datapath = '..{}data'.format(os.sep)
-trainfile = '{}sample_train_data.csv'.format(datapath)
-valfile = '{}sample_val_data.csv'.format(datapath)
+trainfile = '{}{}sample_train_data.csv'.format(datapath, os.sep)
+valfile = '{}{}sample_val_data.csv'.format(datapath, os.sep)
 
 # example using ResNet model
 resnet = ResNet()
